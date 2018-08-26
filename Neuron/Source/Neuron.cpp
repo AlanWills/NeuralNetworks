@@ -17,7 +17,7 @@ namespace Neuron
 	{
 		for (size_t i = 0; i < numOutputs; ++i)
 		{
-			m_outputWeights[i].m_weight = randomWeight();
+			m_outputWeights[i].setWeight(randomWeight());
 		}
 	}
 
@@ -31,7 +31,7 @@ namespace Neuron
 
 		for (size_t n = 0; n < prevLayer.size(); ++n)
 		{
-			sum += prevLayer[n].getOutputValue() * prevLayer[n].m_outputWeights[m_index].m_weight;
+			sum += prevLayer[n].getOutputValue() * prevLayer[n].m_outputWeights[m_index].getWeight();
 		}
 
 		m_outputValue = transferFunction(sum);
@@ -59,15 +59,15 @@ namespace Neuron
 		for (size_t n = 0; n < prevLayer.size() - 1; ++n)
 		{
 			Neuron& neuron = prevLayer[n];
-			double oldDeltaWeight = neuron.m_outputWeights[m_index].m_deltaWeight;
+			double oldDeltaWeight = neuron.m_outputWeights[m_index].getDeltaWeight();
 			double newDeltaWeight =
 				// Individual input, magnified by the gradient and train rate:
 				m_eta * neuron.getOutputValue() * m_gradient
 				// Add also momentum = fraction of the previous delta weight
 				+ m_alpha * oldDeltaWeight;
 
-			neuron.m_outputWeights[m_index].m_deltaWeight = newDeltaWeight;
-			neuron.m_outputWeights[m_index].m_weight += newDeltaWeight;
+			neuron.m_outputWeights[m_index].setDeltaWeight(newDeltaWeight);
+			neuron.m_outputWeights[m_index].incrementWeight(newDeltaWeight);
 		}
 	}
 
@@ -79,7 +79,7 @@ namespace Neuron
 		// Sum our contributions of the errors at the nodes we feed
 		for (size_t n = 0; n < nextLayer.size() - 1; ++n)
 		{
-			sum += m_outputWeights[n].m_weight * nextLayer[n].m_gradient;
+			sum += m_outputWeights[n].getWeight() * nextLayer[n].m_gradient;
 		}
 
 		return sum;

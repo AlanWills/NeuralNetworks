@@ -6,14 +6,17 @@
 namespace Neuron
 {
 	//---------------------------------------------------------------
-	Network::Network()
+	Network::Network() :
+    m_layers(),
+    m_error(0)
 	{
 	}
 
   //---------------------------------------------------------------
-  void Network::initializeTopology(const std::vector<Layer>& topology)
+  void Network::initializeTopology(const std::vector<size_t>& topology)
   {
     size_t numLayers = topology.size();
+    m_layers.clear();
     m_layers.reserve(numLayers);
 
     for (size_t layerNum = 0; layerNum < numLayers; ++layerNum)
@@ -31,7 +34,7 @@ namespace Neuron
       // Force the bias node's output value to 1.0.   It's the last neuron created above.
       m_layers.back().back().setOutputValue(1.0);
     }
-  }
+  } 
 
 	//---------------------------------------------------------------
 	void Network::feedForward(const std::vector<double>& inputValues)
